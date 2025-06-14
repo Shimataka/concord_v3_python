@@ -1,0 +1,11 @@
+{
+    //
+    // Git
+    //
+    // commitを防止するブランチ
+    "git.branchProtection": [
+        "main",
+        "master"
+    ],
+    "git.defaultBranchName": "master",
+}

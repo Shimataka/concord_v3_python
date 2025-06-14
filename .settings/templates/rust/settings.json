@@ -1,0 +1,19 @@
+{
+    //
+    // Git
+    //
+    // commitを防止するブランチ
+    "git.branchProtection": [
+        "main",
+        "master"
+    ],
+    "git.defaultBranchName": "master",
+    //
+    // Rust
+    //
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.formatOnSave": true,
+        "editor.inlayHints.enabled": "offUnlessPressed"
+    }
+}

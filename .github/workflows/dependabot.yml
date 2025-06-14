@@ -1,0 +1,27 @@
+---
+# https://docs.github.com/ja/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+name: Dependabot auto-approve/merge
+"on": pull_request
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+      - name: Approve and auto-merge the PR
+        if: >
+          steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: |
+          gh pr review --approve "$PR_URL"
+          # 当リポジトリの auto-merge 設定とデフォルトブランチ（例：main）に
+          # 対する保護の両方が有効な場合、次の行をアンコメントできます。
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

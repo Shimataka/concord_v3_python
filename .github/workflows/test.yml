@@ -1,0 +1,56 @@
+---
+name: Test
+"on":
+  push:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: npm
+          cache-dependency-path: .settings/package-lock.json
+      - name: "Lint: credentials install1"
+        run: >
+          npm install --save-dev
+          secretlint @secretlint/secretlint-rule-preset-recommend
+      - name: "Lint: credentials install2"
+        run: |
+            npx secretlint --init
+      - name: "Lint: credentials"
+        run: >
+          npx secretlint "**/*"
+          --maskSecrets
+          --secretlintrc .settings/.secretlintrc.yml
+          --secretlintignore .settings/.secretlintignore
+      # - name: "Lint: Git commit message"
+      #   # Dependabot によるコミットの場合、commitlint の実行をスキップする。
+      #   # 理由：Dependabot によるコミットメッセージ 1 行の長さが 100 文字を
+      #   # 超えることがあるため。
+      #   if: github.actor != 'dependabot[bot]'
+      #   uses: wagoid/commitlint-github-action@v6
+      #   with:
+      #     configFile: .settings/.commitlintrc.yml
+      - name: "Lint: YAML"
+        uses: karancode/yamllint-github-action@v2.1.1
+        with:
+          yamllint_config_filepath: .settings/.yamllint.yml
+          yamllint_strict: true
+      - name: "Lint: GitHub Actions workflow"
+        # yamllint disable rule:line-length
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color
+        # yamllint enable rule:line-length
+        shell: bash

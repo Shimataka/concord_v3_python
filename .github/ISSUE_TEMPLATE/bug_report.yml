@@ -1,0 +1,64 @@
+---
+name: Bug Report
+description: Report a bug in the project. / バグの報告
+title: "fix: What is broken?"
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug.
+        Please provide a detailed description of the bug.
+        バグの詳細をご記入ください。
+        具体的な再現方法や実行環境などもあると助かります。
+  - type: textarea
+    id: abstract
+    attributes:
+      label: Abstract / 概要
+      description: |
+        A short description of the bug. / バグの概要をご記入ください。
+      placeholder: |
+        Example: A feature is not working as expected. / 例：何かの機能が期待通りに動作しない。
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Detail / 詳細
+      description: |
+        A detailed description of the bug. / バグの詳細をご記入ください。
+      value: |
+        ## As is / 現状
+        Note what is currently available. / 現状何ができるかをご記入ください。
+
+        ### Steps to Reproduce / 再現方法
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+
+        ### Error Message or Screenshot / エラー文や画面のスクリーンショット
+
+        ## To be / 改善案
+        Note what you want to be available. / 改善案をご記入ください。
+
+        ## Action / 実装方法
+        Note how to implement. / 実装方法をご記入ください。
+    validations:
+      required: false
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment / 実行環境
+      description: |
+        The environment in which the bug occurred. / バグが発生した環境をご記入ください。
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - iOS
+        - Android
+        - Other
+    validations:
+      required: false

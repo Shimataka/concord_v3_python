@@ -1,0 +1,41 @@
+---
+name: Enhancement
+description: Suggest an enhancement to the project. / 新機能の提案や改善
+title: "feat: What becomes available?"
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature or improvement.
+        Please provide a detailed description of the enhancement.
+        新機能の提案や改善をご提案ください。
+        具体的な実装方法やユースケースなどもあると助かります。
+  - type: textarea
+    id: abstract
+    attributes:
+      label: Abstract / 概要
+      description: |
+        A short description of the enhancement. / 新機能の概要をご記入ください。
+      placeholder: |
+        Example: A new feature to be available. / 例：何ができるようになる。
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Detail / 詳細
+      description: |
+        A detailed description of the enhancement. / 新機能の詳細をご記入ください。
+      value: |
+        ## As is / 現状
+        Note what is currently available. / 現状何ができるかをご記入ください。
+
+        ## To be / 改善案
+        Note what you want to be available. / 改善案をご記入ください。
+
+        ## Action / 実装方法
+        Note how to implement. / 実装方法をご記入ください。
+    validations:
+      required: false

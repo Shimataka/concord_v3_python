@@ -1,0 +1,35 @@
+# 字下げにタブを、行揃えには空白を用いる
+hard_tabs = false
+# タブあたりのスペース数
+tab_spaces = 4
+# 改行スタイル
+newline_style = "Auto"
+
+# 幅設定
+max_width = 119
+use_small_heuristics = "Default"
+## 以下はmax_widthに対する割合(%)
+fn_call_width = 60
+attr_fn_like_width = 70
+struct_lit_width = 18
+struct_variant_width = 35
+array_width = 60
+chain_width = 60
+single_line_if_else_max_width = 50
+single_line_let_else_max_width = 50
+
+
+# importとexternのcrate文をアルファベット順に並べ替える
+reorder_imports = true
+
+# グループ内のモジュール文をアルファベット順に並べ替える
+reorder_modules = true
+
+# 入れ子になった括弧を取り除く
+remove_nested_parens = true
+
+# 配列要素を折り返す閾値
+short_array_element_width_threshold = 10
+
+# 関数の引数に対するレイアウト
+fn_params_layout = "Tall"

@@ -1,0 +1,39 @@
+---
+name: Task
+description: Suggest an task to the project. / タスクの提案
+title: "chore: what is the task?"
+labels:
+  - "help wanted"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a task to do.
+        タスクの提案をご提案ください。
+  - type: textarea
+    id: abstract
+    attributes:
+      label: Abstract / 概要
+      description: |
+        A short description of the task. / タスクの概要をご記入ください。
+      placeholder: |
+        Example: Update the README.md file. / 例：README.mdファイルを更新する。
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Detail / 詳細
+      description: |
+        A detailed description of the task. / タスクの詳細をご記入ください。
+      value: |
+        ## As is / 現状
+        Note what is currently available. / 現状をご記入ください。
+
+        ## To be / 目標
+        Note what you want to be available. / 目標をご記入ください。
+
+        ## Action / 実行方法
+        Note how to implement. / 実行方法をご記入ください。
+    validations:
+      required: false

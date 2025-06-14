@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# コミットメッセージを取得
+commit_msg=$(cat "$1")
+
+# Conventional Commitsのパターン
+pattern='^(feat|fix|build|chore|ci|docs|perf|refactor|style|test)(\(.+\))?: .{1,}'
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+    echo "Error: Commit message does not follow the Conventional Commits format."
+    echo "Correct format: '<type>: <description>'"
+    echo "Example:"
+	echo "  - feat: Add user login feature"
+	echo "  - fix: Fix user login failure"
+	echo "  - build: Update dependencies"
+	echo "  - chore: Update CI/CD configuration"
+	echo "  - ci: Add CI/CD configuration"
+	echo "  - docs: Update documentation"
+	echo "  - perf: Improve performance"
+	echo "  - refactor: Refactor code"
+	echo "  - style: Format code"
+	echo "  - test: Add test"
+    exit 1
+fi
+
+# メインブランチへのコミットをチェック
+current_branch=$(git symbolic-ref --short HEAD)
+protected_branches="main master develop"
+
+for branch in $protected_branches; do
+    if [ "$current_branch" = "$branch" ]; then
+        echo "Error: Commit to $branch branch is prohibited."
+        echo "Create a feature branch and use a pull request."
+        exit 1
+    fi
+done
+
+# すべてのチェックをパスした場合
+echo "Success: Commit message is valid."
+exit 0

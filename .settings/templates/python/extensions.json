@@ -1,0 +1,20 @@
+{
+    "recommendations": [
+        "ms-ceintl.vscode-language-pack-ja",
+        "codezombiech.gitignore",
+        "donjayamanne.githistory",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "arahata.linter-actionlint",
+        "davidanson.vscode-markdownlint",
+        "ms-vscode.test-adapter-converter",
+        "christian-kohler.path-intellisense",
+        "editorconfig.editorconfig",
+        "charliermarsh.ruff",
+        "littlefoxteam.vscode-python-test-adapter",
+        "lextudio.restructuredtext",
+        "lextudio.restructuredtext-pack",
+        "swyddfa.esbonio",
+        "ryanluker.vscode-coverage-gutters"
+    ]
+}

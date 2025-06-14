@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        "ms-ceintl.vscode-language-pack-ja",
+        "codezombiech.gitignore",
+        "donjayamanne.githistory",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "arahata.linter-actionlint",
+        "davidanson.vscode-markdownlint",
+        "ms-vscode.test-adapter-converter",
+        "christian-kohler.path-intellisense",
+        "editorconfig.editorconfig",
+        "vadimcn.vscode-lldb",
+        "serayuzgur.crates",
+        "ritwickdey.liveserver",
+        "jscearcy.rust-doc-viewer",
+        "swellaby.vscode-rust-test-adapter",
+        "rust-lang.rust-analyzer",
+        "hbenl.vscode-test-explorer"
+    ]
+}
