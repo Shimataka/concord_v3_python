@@ -2,9 +2,15 @@
 
 ## プロジェクト概要
 
-{編集してください}
+ConcordはDiscord用のBOTアプリケーションです。AIによる会話機能とDiscordのボイスチャットを使用した音声機能を含んでおり、非常に拡張性の高い機能を簡単に実装できるようにコードが構築されています。
+
+Concord is a BOT application for Discord. It includes conversation features with AI and sound features using Discord's voice chat, and the code is constructed to make it easy to implement highly extensible features.
 
 プロジェクト詳細は `.claude/context.md` を参照
+
+## 開発環境
+
+- Python 3.13
 
 ## 開発ドキュメント
 
