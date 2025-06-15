@@ -59,8 +59,8 @@ class TestAgent:
 
         # Verify initialization
         mock_on_launch.assert_called_once()
-        mock_get_logger.assert_called_once_with(name="test_bot", level=logging.INFO)
-        mock_config_args.assert_called_once_with(bot_name="test_bot", logger=mock_logger)
+        mock_get_logger.assert_called_once_with(name="test_bot", level=logging.INFO, log_dir=None)
+        mock_config_args.assert_called_once_with(bot_name="test_bot", logger=mock_logger, config_dir=None)
 
         # Verify Bot creation
         mock_bot_class.assert_called_once_with(
@@ -124,7 +124,7 @@ class TestAgent:
 
         _ = Agent()  # type: ignore[reportPrivateUsage]
 
-        mock_get_logger.assert_called_once_with(name="test_bot", level=logging.DEBUG)
+        mock_get_logger.assert_called_once_with(name="test_bot", level=logging.DEBUG, log_dir=None)
 
     @pytest.mark.asyncio
     async def test_greetings_success(self) -> None:
