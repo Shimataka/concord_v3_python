@@ -6,7 +6,6 @@
             "Bash(ls:*)",
             "Bash(mv:*)",
             "Bash(cp:*)",
-            "Bash(rm:*)",
             "Bash(mkdir:*)",
             "Bash(touch:*)",
             "Bash(chmod:*)",
