@@ -164,6 +164,8 @@ cython_debug/
 # Private files
 *.code-workspace
 local
-src/configs/*
-src/logs/*
+src/configs/*.ini
+src/logs/*.log
+examples/**/configs/*.ini
+examples/**/logs/*.log
 typings/*
