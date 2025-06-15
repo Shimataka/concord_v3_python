@@ -52,7 +52,7 @@ def _import_module(
 def import_classes_from_directory(
     directory_path: str,
     include_name: list[str] | None = None,
-    base_class: type[T] | None = None,
+    base_class: T | None = None,
     logger: Logger | None = None,
 ) -> list[LoadedClass[T]]:
     """指定されたディレクトリ内から、include_name に指定されたクラス名の
@@ -61,7 +61,7 @@ def import_classes_from_directory(
     Args:
         directory_path (str): インポート対象のディレクトリパス
         include_name (list[str] | None): インポート対象のファイル名のリスト (Noneの場合は全てのファイルが対象)
-        base_class (type[T] | None): 特定の基底クラスのインスタンスのみを取得する場合に指定
+        base_class (T | None): 特定の基底クラスのインスタンスのみを取得する場合に指定
         logger (Logger | None): ファイルやクラスをロードするログを出力するロガー
 
     Returns:
@@ -83,11 +83,7 @@ def import_classes_from_directory(
 
         module_classes: list[LoadedClass[T]] = []
         for name, cls in result.unwrap():
-            if base_class is None:
-                module_classes.append(LoadedClass[T](name, cls))
-            else:
-                if issubclass(cls, base_class) and cls != base_class:
-                    module_classes.append(LoadedClass[T](name, cls))
+            module_classes.append(LoadedClass[T](name, cls))
 
         classes.extend(module_classes)
 

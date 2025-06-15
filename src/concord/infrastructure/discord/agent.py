@@ -77,7 +77,7 @@ class Agent:
         for tool_directory_path in self._tool_directory_paths:
             for tool in import_classes_from_directory(
                 directory_path=tool_directory_path.as_posix(),
-                base_class=type(Cog),
+                base_class=Cog,
                 include_name=["__tool__.py"],
                 logger=self._logger,
             ):

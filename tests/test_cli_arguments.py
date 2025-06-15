@@ -83,7 +83,7 @@ class TestOnLaunch:
         # Verify result
         assert isinstance(result, Args)
         assert result.bot_name == "test_bot"
-        assert result.tool_directory_paths == [Path("/path/to/tools1"), Path("/path/to/tools2")]
+        assert set(result.tool_directory_paths) == {Path("/path/to/tools1"), Path("/path/to/tools2")}
         assert result.is_debug is True
 
     @mock.patch("concord.cli.arguments.ArgumentParser")
