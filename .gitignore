@@ -164,5 +164,6 @@ cython_debug/
 # Private files
 *.code-workspace
 local
-src/concord/configs/*
-src/concord/logs/*
+src/configs/*
+src/logs/*
+typings/*
