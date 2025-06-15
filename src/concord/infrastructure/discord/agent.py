@@ -1,5 +1,6 @@
 import logging
 import pprint
+from typing import TYPE_CHECKING
 
 from discord import Intents
 from discord.ext.commands import Bot, Cog
@@ -13,6 +14,9 @@ from concord.infrastructure.logging.logger_notifier import DiscordLogHandler
 from .cached_channels import CachedChannels
 from .on_connecting import OnConnecting
 from .on_ready import OnReady
+
+if TYPE_CHECKING:
+    from concord.model.import_class import LoadedClass
 
 
 class Agent:
@@ -75,12 +79,13 @@ class Agent:
         # Load: extension
         loaded_extensions: list[str] = []
         for tool_directory_path in self._tool_directory_paths:
-            for tool in import_classes_from_directory(
+            tools: list[LoadedClass[type[Cog]]] = import_classes_from_directory(
                 directory_path=tool_directory_path.as_posix(),
                 base_class=Cog,
                 include_name=["__tool__.py"],
                 logger=self._logger,
-            ):
+            )
+            for tool in tools:
                 await self._bot.load_extension(tool.name)
                 loaded_extensions.append(tool.class_obj.__name__)
         msg = f"load extension from `tool_directory_paths`: {loaded_extensions}"
