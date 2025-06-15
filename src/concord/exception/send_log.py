@@ -4,7 +4,6 @@ class DiscordSendLogError(Exception):
         super().__init__(message)
 
     def __str__(self) -> str:
-    def __str__(self) -> str:
         return f"Failed to send log to Discord: {self.message}"
 
     def __repr__(self) -> str:
