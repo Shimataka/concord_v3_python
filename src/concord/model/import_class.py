@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-TypeOfAny = TypeVar("TypeOfAny")
+TypeOfAny = TypeVar("TypeOfAny", bound=type)
 
 
 @dataclass
