@@ -17,7 +17,7 @@
         {
             "label": "py-ruff",
             "type": "shell",
-            "command": "~/.cargo/bin/uvx",
+            "command": "uvx",
             "args": [
                 "ruff",
                 "check",
@@ -31,7 +31,7 @@
         {
             "label": "py-ruff-test",
             "type": "shell",
-            "command": "~/.cargo/bin/uvx",
+            "command": "uvx",
             "args": [
                 "ruff",
                 "check",
@@ -45,7 +45,7 @@
         {
             "label": "py-mypy",
             "type": "shell",
-            "command": "~/.cargo/bin/uvx",
+            "command": "uvx",
             "args": [
                 "mypy",
                 "--config-file=${workspaceFolder}/pyproject.toml"
@@ -61,7 +61,7 @@
         {
             "label": "py-pytest",
             "type": "shell",
-            "command": "~/.cargo/bin/uv",
+            "command": "uv",
             "args": [
                 "run",
                 "pytest",
@@ -91,7 +91,7 @@
         {
             "label": "py-sphinx-apidoc",
             "type": "shell",
-            "command": "~/.cargo/bin/uv",
+            "command": "uv",
             "args": [
                 "run",
                 "sphinx-apidoc",
