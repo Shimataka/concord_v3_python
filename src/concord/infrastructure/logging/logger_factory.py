@@ -45,6 +45,8 @@ def get_logger(
     log_dir: Path | None = None,
 ) -> logging.Logger:
     log_dir = log_dir or DEFAULT_LOG_DIR
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True, exist_ok=True)
     logger = get_background_log(name, log_dir)
     if level < BACKGROUND_LOG_LEVEL:
         logger = my_logger(name, level, log_dir)
