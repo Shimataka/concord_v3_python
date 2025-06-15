@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-T = TypeVar("T")
+TypeOfAny = TypeVar("TypeOfAny")
 
 
 @dataclass
-class LoadedClass(Generic[T]):
+class LoadedClass(Generic[TypeOfAny]):
     name: str
-    class_obj: type[T]
+    class_type: TypeOfAny

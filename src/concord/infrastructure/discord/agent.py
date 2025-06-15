@@ -95,8 +95,14 @@ class Agent:
                 logger=self._logger,
             )
             for tool in tools:
-                await self._bot.load_extension(tool.name)
-                loaded_extensions.append(tool.class_obj.__name__)
+                try:
+                    await self.bot.add_cog(tool.class_type(agent=self))
+                    loaded_extensions.append(tool.class_type.__name__)
+                except Exception:
+                    msg = f"failed to load extension : {tool.name}\n{traceback.format_exc()}"
+                    self.logger.exception(msg)
+                    raise
+
         msg = f"load extension from `tool_directory_paths`: {loaded_extensions}"
         self._logger.info(msg)
 
