@@ -77,11 +77,11 @@ class TestAgent:
         )
 
         # Verify attributes
-        assert agent._logger == mock_logger  # noqa: SLF001 # type: ignore[reportPrivateUsage]
+        assert agent.logger == mock_logger  # type: ignore[reportPrivateUsage]
         assert agent._tool_directory_paths == [Path("/test/tools")]  # noqa: SLF001 # type: ignore[reportPrivateUsage]
-        assert agent._config == mock_config  # noqa: SLF001 # type: ignore[reportPrivateUsage]
-        assert agent._bot == mock_bot  # noqa: SLF001 # type: ignore[reportPrivateUsage]
-        assert agent._cached_channels == mock_channels  # noqa: SLF001 # type: ignore[reportPrivateUsage]
+        assert agent.config == mock_config  # type: ignore[reportPrivateUsage]
+        assert agent.bot == mock_bot  # type: ignore[reportPrivateUsage]
+        assert agent.cached_channels == mock_channels  # type: ignore[reportPrivateUsage]
 
         # Verify bot event registration
         mock_bot.event.assert_called_once()
@@ -152,9 +152,9 @@ class TestAgent:
             mock_channel2 = mock.Mock()
             mock_channel3 = mock.Mock()
 
-            agent._bot.user = mock_user  # noqa: SLF001 # type: ignore[reportPrivateUsage]
-            agent._bot.guilds = [mock_guild1, mock_guild2]  # noqa: SLF001 # type: ignore[reportPrivateUsage]
-            agent._bot.get_all_channels.return_value = [mock_channel1, mock_channel2, mock_channel3]  # noqa: SLF001 # type: ignore[reportPrivateUsage]
+            agent.bot.user = mock_user  # type: ignore[reportPrivateUsage]
+            agent.bot.guilds = [mock_guild1, mock_guild2]  # type: ignore[reportPrivateUsage]
+            agent.bot.get_all_channels.return_value = [mock_channel1, mock_channel2, mock_channel3]  # type: ignore[reportPrivateUsage]
 
             result = await agent.greetings()
 
@@ -175,7 +175,7 @@ class TestAgent:
             mock_get_logger.return_value = mock_logger
 
             agent = Agent()
-            agent._bot.user = None  # noqa: SLF001 # type: ignore[reportPrivateUsage]
+            agent.bot.user = None  # type: ignore[reportPrivateUsage]
 
             with pytest.raises(ValueError, match="User is None") as exc_info:
                 await agent.greetings()
@@ -219,12 +219,16 @@ class TestAgent:
             # Mock import_classes_from_directory to return some tools
             mock_tool1 = LoadedClass[type[Cog]](
                 name="Tool1",
-                class_obj=mock.Mock(__name__="Tool1"),  # type: ignore[reportPrivateUsage]
+                class_type=mock.Mock(__name__="Tool1"),  # type: ignore[reportPrivateUsage]
             )
+            mock_tool1.class_type.return_value.add_cog = mock.AsyncMock()  # type: ignore[reportPrivateUsage]
+            mock_tool1.class_type.return_value.__name__ = "Tool1"  # type: ignore[reportPrivateUsage]
             mock_tool2 = LoadedClass[type[Cog]](
                 name="Tool2",
-                class_obj=mock.Mock(__name__="Tool2"),  # type: ignore[reportPrivateUsage]
+                class_type=mock.Mock(__name__="Tool2"),  # type: ignore[reportPrivateUsage]
             )
+            mock_tool2.class_type.return_value.add_cog = mock.AsyncMock()  # type: ignore[reportPrivateUsage]
+            mock_tool2.class_type.return_value.__name__ = "Tool2"  # type: ignore[reportPrivateUsage]
             mock_import.return_value = [mock_tool1, mock_tool2]
 
             # Mock cog instances
@@ -245,14 +249,11 @@ class TestAgent:
             await agent.on_ready()
 
             # Verify cogs were added
-            assert mock_bot.add_cog.call_count == 2
+            assert mock_bot.add_cog.call_count == 4
             mock_bot.add_cog.assert_any_call(mock_on_connecting_instance)
             mock_bot.add_cog.assert_any_call(mock_on_ready_instance)
-
-            # Verify extensions were loaded
-            assert mock_bot.load_extension.call_count == 2
-            mock_bot.load_extension.assert_any_call("Tool1")
-            mock_bot.load_extension.assert_any_call("Tool2")
+            mock_bot.add_cog.assert_any_call(mock_tool1.class_type(agent=agent))
+            mock_bot.add_cog.assert_any_call(mock_tool2.class_type(agent=agent))
 
             # Verify greetings was called and logged
             agent.greetings.assert_called_once()

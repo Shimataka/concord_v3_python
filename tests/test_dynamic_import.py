@@ -214,7 +214,7 @@ class TestImportClassesFromDirectory:
         )
 
         assert len(result) == 2  # type: ignore[reportUnknownVariableType]
-        assert all(loaded_class.class_obj == MockChildClass for loaded_class in result)  # type: ignore[reportUnknownVariableType]
+        assert all(loaded_class.class_type == MockChildClass for loaded_class in result)  # type: ignore[reportUnknownVariableType]
 
     @mock.patch("concord.infrastructure.discord.dynamic_import.Path")
     @mock.patch("concord.infrastructure.discord.dynamic_import._import_module")
