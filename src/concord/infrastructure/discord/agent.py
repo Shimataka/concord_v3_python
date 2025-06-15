@@ -1,5 +1,6 @@
 import logging
 import pprint
+import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -32,42 +33,44 @@ class Agent:
     """
 
     def __init__(self, utils_dirpath: Path | None = None) -> None:
+        log_dirpath = utils_dirpath / "logs" if utils_dirpath is not None else None
+        config_dirpath = utils_dirpath / "configs" if utils_dirpath is not None else None
         args = on_launch()
         log_level = logging.DEBUG if args.is_debug else logging.INFO
-        self._logger = get_logger(
+        self.logger = get_logger(
             name=args.bot_name,
             level=log_level,
-            log_dir=utils_dirpath,
+            log_dir=log_dirpath,
         )
         self._tool_directory_paths = args.tool_directory_paths
-        self._config = ConfigArgs(
+        self.config = ConfigArgs(
             bot_name=args.bot_name,
-            logger=self._logger,
-            config_dir=utils_dirpath,
+            logger=self.logger,
+            config_dir=config_dirpath,
         )
-        self._bot = Bot(
+        self.bot = Bot(
             intents=Intents.all(),
             command_prefix=("/"),
-            description=self._config.bot.description,
+            description=self.config.bot.description,
             # help_command=None,
         )
-        self._cached_channels = CachedChannels(
-            bot=self._bot,
-            config=self._config,
-            logger=self._logger,
+        self.cached_channels = CachedChannels(
+            bot=self.bot,
+            config=self.config,
+            logger=self.logger,
         )
-        self._bot.event(self.on_ready)
+        self.bot.event(self.on_ready)
 
     async def greetings(self) -> str:
         """グリーティングメッセージを返す"""
-        user = self._bot.user
+        user = self.bot.user
         if user is None:
             msg = "User is None"
-            self._logger.error(msg)
+            self.logger.error(msg)
             raise ValueError(msg)
         msg = f"Logged in as {user.name} ({user.id})"
-        msg += f"Guilds: {len(self._bot.guilds)}"
-        msg += f"Channels: {len(list(self._bot.get_all_channels()))}"
+        msg += f"Guilds: {len(self.bot.guilds)}"
+        msg += f"Channels: {len(list(self.bot.get_all_channels()))}"
         return msg
 
     async def on_ready(self) -> None:
@@ -78,12 +81,12 @@ class Agent:
         - ログイン確認
         - ログチャンネルへのログ送信
         """
-        self._logger.info("function `on_ready` called")
+        self.logger.info("function `on_ready` called")
 
         # Add: cog
-        await self._bot.add_cog(OnConnecting(logger=self._logger))
-        await self._bot.add_cog(OnReady(bot=self._bot, logger=self._logger))
-        self._logger.info("add cog `OnConnecting` and `OnReady`")
+        await self.bot.add_cog(OnConnecting(logger=self.logger))
+        await self.bot.add_cog(OnReady(bot=self.bot, logger=self.logger))
+        self.logger.info("add cog `OnConnecting` and `OnReady`")
 
         # Load: extension
         loaded_extensions: list[str] = []
@@ -92,7 +95,7 @@ class Agent:
                 directory_path=tool_directory_path.as_posix(),
                 base_class=Cog,
                 include_name=["__tool__.py"],
-                logger=self._logger,
+                logger=self.logger,
             )
             for tool in tools:
                 try:
@@ -104,20 +107,20 @@ class Agent:
                     raise
 
         msg = f"load extension from `tool_directory_paths`: {loaded_extensions}"
-        self._logger.info(msg)
+        self.logger.info(msg)
 
         # Log: ログイン確認
         msg = await self.greetings()
-        self._logger.info(msg)
+        self.logger.info(msg)
 
         # Log: ログチャンネルへのログ送信 (ログイン後から送信可能になる)
-        self._logger.addHandler(DiscordLogHandler(self._cached_channels.log_channel))
-        self._logger.info("Enabled logging to discord")
+        self.logger.addHandler(DiscordLogHandler(self.cached_channels.log_channel))
+        self.logger.info("Enabled logging to discord")
 
         # Check: Post message
-        await self._cached_channels.dev_channel.send("Good morning, Master.\nGood work today.")
+        await self.cached_channels.dev_channel.send("Good morning, Master.\nGood work today.")
         if len(loaded_extensions) > 0:
-            await self._cached_channels.dev_channel.send(
+            await self.cached_channels.dev_channel.send(
                 f"Available commands:\n{
                     pprint.pformat(
                         loaded_extensions,
@@ -126,9 +129,9 @@ class Agent:
                 }",
             )
         else:
-            await self._cached_channels.dev_channel.send("No commands available")
+            await self.cached_channels.dev_channel.send("No commands available")
         msg = "Sent message to dev channel"
-        self._logger.info(msg)
+        self.logger.info(msg)
 
     async def run(self) -> None:
         """BOTを起動する
@@ -139,4 +142,4 @@ class Agent:
         Returns:
             None
         """
-        await self._bot.start(self._config.bot.discord_token)
+        await self.bot.start(self.config.bot.discord_token)
