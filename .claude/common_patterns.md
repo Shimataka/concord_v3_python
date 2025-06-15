@@ -25,3 +25,34 @@
 形式: `<type>: <description>`
 
 有効なタイプ: `feat`, `fix`, `build`, `chore`, `ci`, `docs`, `perf`, `refactor`, `style`, `test`
+
+## Development Commands
+
+### Package Management
+
+```bash
+uv sync                    # Install dependencies
+uv add <package>           # Add new dependency
+```
+
+### Code Quality
+
+```bash
+uv run ruff check          # Lint code
+uv run ruff format         # Format code
+uv run mypy src/ tests/    # Type checking
+```
+
+### Testing
+
+```bash
+uv run pytest             # Run all tests with coverage
+uv run pytest tests/      # Run specific test directory
+```
+
+### Running the Bot
+
+```bash
+uv run src/main.py               # Normal mode
+uv run src/main.py --is-debug    # Debug mode
+```

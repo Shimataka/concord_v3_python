@@ -1,0 +1,95 @@
+---
+name: reviewdog-python
+"on":
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    types:
+      - opened
+      - edited
+      - synchronize
+jobs:
+  # Python>3.11 開発環境用
+  # RuffおよびMypyをaddしてある.lockファイルが必要
+  reviewdog-python:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        python-version:
+          - 3.11
+        workdir:
+          - .
+        srcdir:
+          - ./src
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+#      # Poetryの場合はpoetry.lockが必要です。
+#      - uses: actions/setup-python@v4
+#        with:
+#          python-version: 3.11
+#      - name: "poetry install"
+#        run: |
+#          python -m pip install poetry
+#          poetry add ruff mypy --dev
+#      - name: ruff
+#        env:
+#          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+#        run: >
+#          poetry run ruff check . | reviewdog -efm="%f:%l:%c: %m"
+#          -name=ruff -reporter=github-pr-review
+#          -fail-on-error=true -filter-mode=nofilter
+#        working-directory: ${{ matrix.workdir }}
+#      - name: mypy
+#        env:
+#          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+#        run: >
+#          poetry run mypy . |
+#          reviewdog -efm="%f:%l: %m" -name=mypy -reporter=github-pr-review
+#          -fail-on-error=true -filter-mode=nofilter
+#        working-directory: ${{ matrix.workdir }}
+
+      # uvの場合はuv.lockが必要です。
+      - name: "uv install"
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv sync
+          . .venv/bin/activate
+          uv add ruff
+          uv add mypy
+      - name: ruff
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+        run: >
+          uvx ruff check . | reviewdog -efm="%f:%l:%c: %m"
+          -name=ruff -reporter=github-pr-review
+          -fail-on-error=true -filter-mode=nofilter
+        working-directory: ${{ matrix.srcdir }}
+      - name: mypy
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+        run: >
+          uvx mypy . --config-file pyproject.toml
+          --ignore-missing-imports --no-namespace-packages |
+          reviewdog -efm="%f:%l: %m"
+          -name=mypy -reporter=github-pr-review
+          -fail-on-error=true -filter-mode=nofilter
+        working-directory: ${{ matrix.srcdir }}
+      - name: pytest
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+        run: >
+          uvx pytest tests -vv --tb=short -s --cov=./tests --cov-report html |
+          reviewdog -efm="%f:%l: %m"
+          -name=pytest -reporter=github-pr-review
+          -fail-on-error=true -filter-mode=nofilter
+        working-directory: ${{ matrix.srcdir }}

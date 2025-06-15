@@ -10,7 +10,11 @@
         "ms-vscode.test-adapter-converter",
         "christian-kohler.path-intellisense",
         "editorconfig.editorconfig",
-        "tamasfe.even-better-toml",
-        "gruntfuggly.todo-tree"
+        "charliermarsh.ruff",
+        "littlefoxteam.vscode-python-test-adapter",
+        "lextudio.restructuredtext",
+        "lextudio.restructuredtext-pack",
+        "swyddfa.esbonio",
+        "ryanluker.vscode-coverage-gutters"
     ]
 }

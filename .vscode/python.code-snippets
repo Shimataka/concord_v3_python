@@ -1,0 +1,117 @@
+{
+    // Place your computational-ops workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+    // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+    // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+    // used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+    // Placeholders with the same ids are connected.
+    // Example:
+    // "Print to console": {
+    // 	"scope": "javascript,typescript",
+    // 	"prefix": "log",
+    // 	"body": [
+    // 		"console.log('$1');",
+    // 		"$2"
+    // 	],
+    // 	"description": "Log output to console"
+    // }
+    "google docstring": {
+        "scope": "python",
+        "prefix": "docstring_google",
+        "body": [
+            "\"\"\"$1",
+            "",
+            "Args:",
+            "    $2 ($3): $4",
+            "",
+            "Attributes:",
+            "    $5 ($6): $7",
+            "",
+            "Returns:",
+            "    $8: $9",
+            "",
+            "Yields:",
+            "    $10: $11",
+            "",
+            "Raises:",
+            "    $12: $13",
+            "",
+            "Examples:",
+            "    $14",
+            "",
+            "Notes:",
+            "    $15",
+            "",
+            "TODOS:",
+            "    $16",
+            "\"\"\"",
+        ],
+        "description": "Google docstring"
+    },
+    "google docstring for class": {
+        "scope": "python",
+        "prefix": "class_docstring_google",
+        "body": [
+            "\"\"\"$1",
+            "",
+            "Args:",
+            "    $2 ($3): $4",
+            "",
+            "Attributes:",
+            "    $5 ($6): $7",
+            "",
+            "Examples:",
+            "    $8",
+            "",
+            "Notes:",
+            "    $9",
+            "",
+            "TODOS:",
+            "    $10",
+            "\"\"\"",
+        ],
+    },
+    "google docstring for function": {
+        "scope": "python",
+        "prefix": "function_docstring_google",
+        "body": [
+            "\"\"\"$1",
+            "",
+            "Args:",
+            "    $2 ($3): $4",
+            "",
+            "Returns:",
+            "    $5: $6",
+            "",
+            "Yields:",
+            "    $7: $8",
+            "",
+            "Raises:",
+            "    $9: $10",
+            "",
+            "Examples:",
+            "    $11",
+            "",
+            "Notes:",
+            "    $12",
+            "",
+            "TODOS:",
+            "    $13",
+            "\"\"\"",
+        ],
+    },
+    "google docstring for module": {
+        "scope": "python",
+        "prefix": "module_docstring_google",
+        "body": [
+            "\"\"\"$1",
+            "",
+            "Notes:",
+            "    $2",
+            "",
+            "TODOS:",
+            "    $3",
+            "\"\"\"",
+        ],
+    }
+}

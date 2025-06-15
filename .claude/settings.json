@@ -1,0 +1,22 @@
+{
+    "permissions": {
+        "allow": [
+            "List(*)",
+            "Fetch(https://*)",
+            "Bash(ls:*)",
+            "Bash(mv:*)",
+            "Bash(cp:*)",
+            "Bash(mkdir:*)",
+            "Bash(touch:*)",
+            "Bash(chmod:*)",
+            "Bash(cat:*)",
+            "Bash(uv:*)",
+            "Bash(uvx:*)",
+            "Bash(git:*)"
+        ],
+        "deny": [
+            "Bash(rm:*)",
+            "Bash(rmdir:*)"
+        ]
+    }
+}
