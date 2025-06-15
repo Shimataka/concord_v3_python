@@ -56,12 +56,3 @@ uv run pytest tests/      # Run specific test directory
 uv run src/main.py               # Normal mode
 uv run src/main.py --is-debug    # Debug mode
 ```
-
-## Architecture
-
-### Layer Structure
-
-- **Domain** (`src/concord/domain/entities/`): Core business entities
-- **Application** (`src/concord/application/`): Event handlers and use cases
-- **Infrastructure** (`src/concord/infrastructure/`): External concerns
-- **Core** (`src/concord/core/`): Shared utilities
