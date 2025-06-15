@@ -54,8 +54,8 @@ option4 = {API token}
 次のようなコマンドを実行するだけです。
 
 ```bash
-> python3 concord/main.py  # Normal mode
-> python3 concord/main.py --dev  # Debug mode
+> python3 concord/main.py --bot-name {bot_name}  # Normal mode
+> python3 concord/main.py --bot-name {bot_name} --is-debug  # Debug mode
 ```
 
 実行時のログは、`concord/logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
