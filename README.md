@@ -58,7 +58,7 @@ option4 = {API token}
 > python3 concord/main.py --dev  # Debug mode
 ```
 
-実行時のログは、`concord/logs/discordBOT_{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
+実行時のログは、`concord/logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
 
 ## Manual
 
