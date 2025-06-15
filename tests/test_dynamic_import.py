@@ -76,7 +76,7 @@ class TestProcessClass:
         """Test processing class when no base class is specified."""
         mock_logger = mock.Mock()
 
-        result = _process_class(
+        result = _process_class(  # type: ignore[reportUnknownVariableType]
             MockChildClass,
             None,
             "test.module",
@@ -142,7 +142,7 @@ class TestImportModule:
         """Test module import failure."""
         mock_import_module.side_effect = ImportError("Module not found")
 
-        result = _import_module("nonexistent.module")
+        result = _import_module("nonexistent.module")  # type: ignore[reportUnknownVariableType]
 
         assert result.is_err()
         error_msg = result.unwrap_err()
@@ -164,11 +164,11 @@ class TestImportModule:
             ("MockUnrelatedClass", MockUnrelatedClass),
         ]
 
-        result = _import_module("test.module", None, None)
+        result = _import_module("test.module", None, None)  # type: ignore[reportUnknownVariableType]
 
         assert result.is_ok()
-        classes = result.unwrap()
-        assert len(classes) == 2
+        classes = result.unwrap()  # type: ignore[reportUnknownVariableType]
+        assert len(classes) == 2  # type: ignore[reportUnknownVariableType]
 
 
 class TestImportClassesFromDirectory:

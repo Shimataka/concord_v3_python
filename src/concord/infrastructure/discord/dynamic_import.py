@@ -13,11 +13,11 @@ T = TypeVar("T", bound=type)
 
 
 def _process_class(
-    obj: type,
-    base_class: type | None,
+    obj: object,
+    base_class: T | None,
     module_path: str,
     logger: Logger | None,
-) -> tuple[str, type] | None:
+) -> tuple[str, type[T]] | None:
     if not inspect.isclass(obj):
         return None
     if base_class is None or (issubclass(obj, base_class) and obj != base_class):
@@ -30,15 +30,15 @@ def _process_class(
 
 def _import_module(
     module_path: str,
-    base_class: type | None = None,
+    base_class: T | None = None,
     logger: Logger | None = None,
-) -> Result[list[tuple[str, type]], str]:
+) -> Result[list[tuple[str, type[T]]], str]:
     if logger is not None:
         msg = f"Import: {module_path}"
         logger.info(msg)
     try:
         module = importlib.import_module(module_path)
-        classes: list[tuple[str, type]] = []
+        classes: list[tuple[str, type[T]]] = []
         for _, obj in inspect.getmembers(module):
             result = _process_class(obj, base_class, module_path, logger)
             if result is not None:

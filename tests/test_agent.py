@@ -1,5 +1,7 @@
 """Tests for Agent class."""
 
+# mypy: ignore-errors
+
 import logging
 from pathlib import Path
 from unittest import mock
