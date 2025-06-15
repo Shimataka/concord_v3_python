@@ -42,8 +42,9 @@ def my_logger(name: str, level: int, log_dir: Path) -> Logger:
 def get_logger(
     name: str,
     level: int = logging.INFO,
-    log_dir: Path = DEFAULT_LOG_DIR,
+    log_dir: Path | None = None,
 ) -> logging.Logger:
+    log_dir = log_dir or DEFAULT_LOG_DIR
     logger = get_background_log(name, log_dir)
     if level < BACKGROUND_LOG_LEVEL:
         logger = my_logger(name, level, log_dir)

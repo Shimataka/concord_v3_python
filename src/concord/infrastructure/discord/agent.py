@@ -1,5 +1,6 @@
 import logging
 import pprint
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from discord import Intents
@@ -30,12 +31,20 @@ class Agent:
         - is_debug (bool, optional): デバッグモードかどうか
     """
 
-    def __init__(self) -> None:
+    def __init__(self, utils_dirpath: Path | None = None) -> None:
         args = on_launch()
         log_level = logging.DEBUG if args.is_debug else logging.INFO
-        self._logger = get_logger(name=args.bot_name, level=log_level)
+        self._logger = get_logger(
+            name=args.bot_name,
+            level=log_level,
+            log_dir=utils_dirpath,
+        )
         self._tool_directory_paths = args.tool_directory_paths
-        self._config = ConfigArgs(bot_name=args.bot_name, logger=self._logger)
+        self._config = ConfigArgs(
+            bot_name=args.bot_name,
+            logger=self._logger,
+            config_dir=utils_dirpath,
+        )
         self._bot = Bot(
             intents=Intents.all(),
             command_prefix=("/"),
