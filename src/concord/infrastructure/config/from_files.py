@@ -243,6 +243,7 @@ class ConfigArgs:
     Args:
         bot_name (str): BOTの名前
         logger (logging.Logger): ロガー
+        config_dir (Path | None): 設定ファイルのディレクトリパス
     """
 
     def __init__(
@@ -250,10 +251,20 @@ class ConfigArgs:
         *,
         bot_name: str,
         logger: logging.Logger,
+        config_dir: Path | None = None,
     ) -> None:
+        api_filepath = config_dir / "API.ini" if config_dir is not None else None
+        bot_filepath = config_dir / f"{bot_name}.ini" if config_dir is not None else None
         self._logger = logger
-        self.api = ConfigAPI(logger=self._logger)
-        self.bot = ConfigBOT(bot_name=bot_name, logger=self._logger)
+        self.api = ConfigAPI(
+            logger=self._logger,
+            filepath=api_filepath,
+        )
+        self.bot = ConfigBOT(
+            bot_name=bot_name,
+            logger=self._logger,
+            filepath=bot_filepath,
+        )
 
     def load_config_from(self, *, file_stem: str) -> BaseConfigArgs:
         """設定ファイルを読み込む

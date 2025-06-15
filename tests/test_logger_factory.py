@@ -1,6 +1,8 @@
 """Tests for logger factory module."""
 
 import logging
+import shutil
+import tempfile
 from pathlib import Path
 from unittest import mock
 
@@ -17,6 +19,14 @@ from concord.infrastructure.logging.logger_factory import (
 
 class TestLoggerFactory:
     """Test the logger factory functions."""
+
+    def setup_method(self) -> None:
+        """Set up test environment."""
+        self.temp_dir = Path(tempfile.mkdtemp())
+
+    def teardown_method(self) -> None:
+        """Clean up test environment."""
+        shutil.rmtree(self.temp_dir)
 
     @mock.patch("concord.infrastructure.logging.logger_factory.getLogger")
     @mock.patch("concord.infrastructure.logging.logger_factory.TimedRotatingFileHandler")
@@ -38,7 +48,7 @@ class TestLoggerFactory:
         mock_formatter = mock.Mock()
         mock_formatter_class.return_value = mock_formatter
 
-        log_dir = Path("/test/logs")
+        log_dir = self.temp_dir / "logs"
 
         # Call function
         result = get_background_log("test_logger", log_dir)
@@ -86,7 +96,7 @@ class TestLoggerFactory:
         mock_formatter = mock.Mock()
         mock_formatter_class.return_value = mock_formatter
 
-        log_dir = Path("/test/logs")
+        log_dir = self.temp_dir / "logs"
         log_level = logging.DEBUG
 
         # Call function
@@ -120,7 +130,7 @@ class TestLoggerFactory:
         mock_logger = mock.Mock()
         mock_get_background_log.return_value = mock_logger
 
-        log_dir = Path("/test/logs")
+        log_dir = self.temp_dir / "logs"
 
         # Test with level equal to BACKGROUND_LOG_LEVEL
         result = get_logger("test_logger", BACKGROUND_LOG_LEVEL, log_dir)
@@ -143,7 +153,7 @@ class TestLoggerFactory:
         mock_debug_logger = mock.Mock()
         mock_my_logger_func.return_value = mock_debug_logger
 
-        log_dir = Path("/test/logs")
+        log_dir = self.temp_dir / "logs"
         debug_level = logging.DEBUG
 
         # Test with level higher than BACKGROUND_LOG_LEVEL
@@ -182,7 +192,7 @@ class TestLoggerFactory:
         mock_logger = mock.Mock()
         mock_get_background_log.return_value = mock_logger
 
-        log_dir = Path("/test/logs")
+        log_dir = self.temp_dir / "logs"
 
         # Test with level lower than BACKGROUND_LOG_LEVEL (which is INFO)
         debug_level = logging.DEBUG

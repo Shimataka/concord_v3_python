@@ -34,6 +34,7 @@ exclude = [
     "activate",
     "deactivate",
     "typings/*",
+    "examples/*",
 ]
 
 [tool.uv]

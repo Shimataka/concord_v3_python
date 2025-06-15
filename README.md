@@ -4,17 +4,33 @@ ConcordはDiscord用のBOTアプリケーションです。AIによる会話機�
 
 Concord is a BOT application for Discord. It includes conversation features with AI and sound features using Discord's voice chat, and the code is constructed to make it easy to implement highly extensible features.
 
-## Getting Started
+## How to install
 
-### How to install
+- 以下のコマンドを実行して、Concordをインストールします。
 
-- `concord/main.py`でBOTのインスタンスを作成します
-- BOTの名前 (`bot_name="Dexneuf"`となっている箇所) は、自由に決めることができます
-- この`bot_name`は、`concord/configs`に配置する設定ファイル`*.ini`と紐づけられます
-- `concord/configs`に`<bot_name>.ini`を配置して、次のように記述してください
+    ```bash
+    > pip install -e git+https://github.com/Shimataka/concord_v3_python.git
+    ```
+
+## How to use the BOT
+
+### 1. `main.py` で以下のようにBOTのインスタンスを作成します
 
 ```python
-# concord/configs/{bot_name}.ini
+import asyncio
+from concord import Agent  # DiscordBOTのクラス
+
+if __name__ == "__main__":
+    config_and_log_dirpath = Path(__file__).parent
+    agent = Agent(utils_dirpath=config_and_log_dirpath)  # インスタンスを作成
+    asyncio.run(agent.run())
+```
+
+### 2. `main.py` と同じ階層に `configs/{bot_name}.ini` を配置して、次のように記述してください
+
+```ini
+# configs/{bot_name}.ini
+# ファイル名にある `{bot_name}` は自由に決めることができますが、あとで使用するので覚えておいてください。
 [Discord.API]
 token = {Discord token}
 
@@ -36,10 +52,10 @@ exclusions = [{ExcludedTools1}, {ExcludedTools2}, ...]
 
 `exclusions`オプションはBOTの登録をスキップするクラス名を記述するものです。ここに記述された文字列と同名のクラスは、BOTへの登録がされません。
 
-さらに `concord/configs/API.ini` を配置することで、 `concord/tools` などで使用するAPI tokenをBOT経由でアクセスできます。
+さらに `configs/API.ini` を配置することで、 `tools` などで使用するAPI tokenをBOT経由でアクセスできます。
 
-```python
-# concord/configs/API.ini
+```ini
+# configs/API.ini
 [section_name1]  # lower case
 option1 = {API token}
 option2 = {API token}
@@ -49,28 +65,28 @@ option3 = {API token}
 option4 = {API token}
 ```
 
-## How to use the BOT
-
-次のようなコマンドを実行するだけです。
+### 3. コマンドを実行します
 
 ```bash
-> python3 concord/main.py --bot-name {bot_name}  # Normal mode
-> python3 concord/main.py --bot-name {bot_name} --is-debug  # Debug mode
+> python3 main.py --bot-name {bot_name}  # Normal mode
+> python3 main.py --bot-name {bot_name} --is-debug  # Debug mode
 ```
 
-実行時のログは、`concord/logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
+実行時のログは、`logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
 
-## Manual
+## How to register tools
 
-### Tutorial
+BOTに[スラッシュコマンド](https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html)を実装します。
 
-### ツール登録方法
+[examples/ex01_load_test_tools](examples/ex01_load_test_tools) に、ツールを読み込ませるサンプルがあります。
 
-BOTに[スラッシュコマンド](https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html)を実装します。`concord/tools` に `__tool__.py` を配置すると、そこに書かれたクラスのうち `discord.ext.commands.Cog` を継承したクラスは、BOTの起動時に自動で読み込みます。スラッシュコマンド以外にも、メッセージのポストなどの[イベント](https://discordpy.readthedocs.io/ja/latest/api.html#event-reference)に反応して実行する処理や、スケジューリングされた処理を行うことが可能です。定期実行したい場合は、[discord.pyのtaskヘルパー例](https://discordpy.readthedocs.io/ja/latest/ext/tasks/index.html)を参考にしてください。
+### 1. 任意のディレクトリ `{path1}` や `{path2}` などに `__tool__.py` を配置し、以下のように実行します
 
-### 実装済みのツール一覧
+```bash
+> python3 concord/main.py --bot-name {bot_name} --tool-directory-paths {path1} {path2} ...
+```
 
-実装したツールの一覧をアルファベット順に表示。
+### 2. `__tool__.py` に書かれたクラスのうち `discord.ext.commands.Cog` を継承したクラスは、BOTの起動時に自動で読み込みます
 
-| ツール名 | 機能 |
-| :---: | :--- |
+> [!NOTE]
+> スラッシュコマンド以外にも、メッセージのポストなどの[イベント](https://discordpy.readthedocs.io/ja/latest/api.html#event-reference)に反応して実行する処理や、スケジューリングされた処理を行うことが可能です。定期実行したい場合は、[discord.pyのtaskヘルパー例](https://discordpy.readthedocs.io/ja/latest/ext/tasks/index.html)を参考にしてください。

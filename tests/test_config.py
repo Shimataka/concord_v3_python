@@ -444,8 +444,8 @@ class TestConfigArgs:
         assert config.api == mock_api_instance
         assert config.bot == mock_bot_instance
 
-        mock_config_api.assert_called_once_with(logger=mock_logger)
-        mock_config_bot.assert_called_once_with(bot_name="testbot", logger=mock_logger)
+        mock_config_api.assert_called_once_with(logger=mock_logger, filepath=None)
+        mock_config_bot.assert_called_once_with(bot_name="testbot", logger=mock_logger, filepath=None)
 
     @mock.patch("concord.infrastructure.config.from_files.BaseConfigArgs")
     def test_load_config_from(self, mock_base_config: mock.Mock) -> None:
