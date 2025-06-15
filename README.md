@@ -21,14 +21,15 @@ import asyncio
 from concord import Agent  # DiscordBOTのクラス
 
 if __name__ == "__main__":
-    agent = Agent()  # インスタンスを作成
+    config_and_log_dirpath = Path(__file__).parent
+    agent = Agent(utils_dirpath=config_and_log_dirpath)  # インスタンスを作成
     asyncio.run(agent.run())
 ```
 
-### 2. `concord/configs` に `{bot_name}.ini` を配置して、次のように記述してください
+### 2. `main.py` と同じ階層に `configs/{bot_name}.ini` を配置して、次のように記述してください
 
 ```ini
-# concord/configs/{bot_name}.ini
+# configs/{bot_name}.ini
 # ファイル名にある `{bot_name}` は自由に決めることができますが、あとで使用するので覚えておいてください。
 [Discord.API]
 token = {Discord token}
@@ -51,10 +52,10 @@ exclusions = [{ExcludedTools1}, {ExcludedTools2}, ...]
 
 `exclusions`オプションはBOTの登録をスキップするクラス名を記述するものです。ここに記述された文字列と同名のクラスは、BOTへの登録がされません。
 
-さらに `concord/configs/API.ini` を配置することで、 `concord/tools` などで使用するAPI tokenをBOT経由でアクセスできます。
+さらに `configs/API.ini` を配置することで、 `tools` などで使用するAPI tokenをBOT経由でアクセスできます。
 
 ```ini
-# concord/configs/API.ini
+# configs/API.ini
 [section_name1]  # lower case
 option1 = {API token}
 option2 = {API token}
@@ -67,11 +68,11 @@ option4 = {API token}
 ### 3. コマンドを実行します
 
 ```bash
-> python3 concord/main.py --bot-name {bot_name}  # Normal mode
-> python3 concord/main.py --bot-name {bot_name} --is-debug  # Debug mode
+> python3 main.py --bot-name {bot_name}  # Normal mode
+> python3 main.py --bot-name {bot_name} --is-debug  # Debug mode
 ```
 
-実行時のログは、`concord/logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
+実行時のログは、`logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
 
 ## How to register tools
 
