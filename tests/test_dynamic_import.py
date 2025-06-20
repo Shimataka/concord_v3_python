@@ -2,6 +2,7 @@
 
 # mypy: ignore-errors
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest import mock
 
@@ -41,7 +42,7 @@ class TestProcessClass:
         result = _process_class(
             MockChildClass,
             MockBaseClass,
-            "test.module",
+            Path("test/module"),
             mock_logger,
         )
 
@@ -55,7 +56,7 @@ class TestProcessClass:
         result = _process_class(
             MockBaseClass,
             MockBaseClass,
-            "test.module",
+            Path("test/module"),
             None,
         )
 
@@ -66,7 +67,7 @@ class TestProcessClass:
         result = _process_class(
             MockUnrelatedClass,
             MockBaseClass,
-            "test.module",
+            Path("test/module"),
             None,
         )
 
@@ -79,7 +80,7 @@ class TestProcessClass:
         result = _process_class(  # type: ignore[reportUnknownVariableType]
             MockChildClass,
             None,
-            "test.module",
+            Path("test/module"),
             mock_logger,
         )
 
@@ -92,7 +93,7 @@ class TestProcessClass:
         result = _process_class(
             "not_a_class",  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             MockBaseClass,
-            "test.module",
+            Path("test/module"),
             None,
         )
 
@@ -103,7 +104,7 @@ class TestProcessClass:
         result = _process_class(
             MockChildClass,
             MockBaseClass,
-            "test.module",
+            Path("test/module"),
             None,
         )
 
@@ -113,23 +114,36 @@ class TestProcessClass:
 class TestImportModule:
     """Test the _import_module function."""
 
-    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.import_module")
+    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.util.module_from_spec")
+    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.util.spec_from_file_location")
     @mock.patch("concord.infrastructure.discord.dynamic_import.inspect.getmembers")
+    @mock.patch("pathlib.Path.stat")
     def test_import_module_success(
         self,
+        mock_stat: mock.Mock,
         mock_getmembers: mock.Mock,
-        mock_import_module: mock.Mock,
+        mock_spec_from_file_location: mock.Mock,
+        mock_module_from_spec: mock.Mock,
     ) -> None:
         """Test successful module import."""
+        mock_stat_result = mock.Mock()
+        mock_stat_result.st_ino = 12345
+        mock_stat.return_value = mock_stat_result
+
+        mock_spec = mock.Mock()
+        mock_spec.loader = mock.Mock()
+        mock_spec_from_file_location.return_value = mock_spec
+
         mock_module = mock.Mock()
-        mock_import_module.return_value = mock_module
+        mock_module_from_spec.return_value = mock_module
+
         mock_getmembers.return_value = [
             ("MockChildClass", MockChildClass),
             ("MockUnrelatedClass", MockUnrelatedClass),
         ]
 
         mock_logger = mock.Mock()
-        result = _import_module("test.module", MockBaseClass, mock_logger)
+        result = _import_module(Path("test/module"), MockBaseClass, mock_logger)
 
         assert result.is_ok()
         classes = result.unwrap()
@@ -137,34 +151,55 @@ class TestImportModule:
         assert classes[0][1] == MockChildClass
         mock_logger.info.assert_called()
 
-    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.import_module")
-    def test_import_module_failure(self, mock_import_module: mock.Mock) -> None:
+    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.util.spec_from_file_location")
+    @mock.patch("pathlib.Path.stat")
+    def test_import_module_failure(
+        self,
+        mock_stat: mock.Mock,
+        mock_spec_from_file_location: mock.Mock,
+    ) -> None:
         """Test module import failure."""
-        mock_import_module.side_effect = ImportError("Module not found")
+        mock_stat_result = mock.Mock()
+        mock_stat_result.st_ino = 12345
+        mock_stat.return_value = mock_stat_result
 
-        result = _import_module("nonexistent.module")  # type: ignore[reportUnknownVariableType]
+        mock_spec_from_file_location.return_value = None
+
+        result = _import_module(Path("nonexistent/module"))  # type: ignore[reportUnknownVariableType]
 
         assert result.is_err()
         error_msg = result.unwrap_err()
-        assert "Error importing nonexistent.module" in error_msg
-        assert "Module not found" in error_msg
+        assert "Failed to import nonexistent/module" in error_msg
 
-    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.import_module")
+    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.util.module_from_spec")
+    @mock.patch("concord.infrastructure.discord.dynamic_import.importlib.util.spec_from_file_location")
     @mock.patch("concord.infrastructure.discord.dynamic_import.inspect.getmembers")
+    @mock.patch("pathlib.Path.stat")
     def test_import_module_no_base_class(
         self,
+        mock_stat: mock.Mock,
         mock_getmembers: mock.Mock,
-        mock_import_module: mock.Mock,
+        mock_spec_from_file_location: mock.Mock,
+        mock_module_from_spec: mock.Mock,
     ) -> None:
         """Test module import without base class filter."""
+        mock_stat_result = mock.Mock()
+        mock_stat_result.st_ino = 12345
+        mock_stat.return_value = mock_stat_result
+
+        mock_spec = mock.Mock()
+        mock_spec.loader = mock.Mock()
+        mock_spec_from_file_location.return_value = mock_spec
+
         mock_module = mock.Mock()
-        mock_import_module.return_value = mock_module
+        mock_module_from_spec.return_value = mock_module
+
         mock_getmembers.return_value = [
             ("MockChildClass", MockChildClass),
             ("MockUnrelatedClass", MockUnrelatedClass),
         ]
 
-        result = _import_module("test.module", None, None)  # type: ignore[reportUnknownVariableType]
+        result = _import_module(Path("test/module"), None, None)  # type: ignore[reportUnknownVariableType]
 
         assert result.is_ok()
         classes = result.unwrap()  # type: ignore[reportUnknownVariableType]
@@ -193,6 +228,9 @@ class TestImportClassesFromDirectory:
 
         mock_directory = mock.Mock()
         mock_directory.name = "test_dir"
+        mock_directory.is_dir.return_value = True
+        mock_directory.exists.return_value = True
+        mock_directory.resolve.return_value = mock_directory
         mock_directory.glob.return_value = [mock_file1, mock_file2]
 
         mock_path.return_value = mock_directory
@@ -234,6 +272,9 @@ class TestImportClassesFromDirectory:
 
         mock_directory = mock.Mock()
         mock_directory.name = "test_dir"
+        mock_directory.is_dir.return_value = True
+        mock_directory.exists.return_value = True
+        mock_directory.resolve.return_value = mock_directory
         mock_directory.glob.return_value = [mock_file1, mock_file2]
 
         mock_path.return_value = mock_directory
@@ -265,7 +306,6 @@ class TestImportClassesFromDirectory:
     #     mock_file.stem = "test"
     #
     #     mock_directory = mock.Mock()
-    #     mock_directory.name = "test_dir"
     #     mock_directory.glob.return_value = [mock_file]
     #
     #     mock_path.return_value = mock_directory
@@ -284,6 +324,9 @@ class TestImportClassesFromDirectory:
         """Test directory import with empty directory."""
         mock_directory = mock.Mock()
         mock_directory.name = "empty_dir"
+        mock_directory.is_dir.return_value = True
+        mock_directory.exists.return_value = True
+        mock_directory.resolve.return_value = mock_directory
         mock_directory.glob.return_value = []
 
         mock_path.return_value = mock_directory
@@ -306,6 +349,9 @@ class TestImportClassesFromDirectory:
 
         mock_directory = mock.Mock()
         mock_directory.name = "test_dir"
+        mock_directory.is_dir.return_value = True
+        mock_directory.exists.return_value = True
+        mock_directory.resolve.return_value = mock_directory
         mock_directory.glob.return_value = [mock_file]
 
         mock_path.return_value = mock_directory

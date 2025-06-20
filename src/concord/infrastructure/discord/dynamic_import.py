@@ -1,6 +1,7 @@
 import importlib
 import importlib.util
 import inspect
+import sys
 from logging import Logger
 from pathlib import Path
 from typing import TypeVar, cast
@@ -21,7 +22,7 @@ def _process_class(
 ) -> tuple[str, TypeOfAny] | None:
     if not inspect.isclass(obj):
         return None
-    if base_class is None or (issubclass(obj, base_class) and obj != base_class):
+    if base_class is None or (issubclass(obj, base_class) and obj is not base_class):
         if logger is not None:
             msg = f"Loaded {obj.__name__} from {module_path!s}"
             logger.info(msg)
@@ -38,11 +39,15 @@ def _import_module(
         msg = f"Import: {module_path}"
         logger.info(msg)
     try:
-        spec = importlib.util.spec_from_file_location(str(module_path), str(module_path))
-        if spec is None:
+        module_name = f"_dyn_mod_{module_path.name}_{module_path.stat().st_ino}"
+        spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+        if spec is None or spec.loader is None:
             msg = f"Failed to import {module_path}"
             return Err(msg)
         module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+
         classes: list[tuple[str, TypeOfAny]] = []
         for _, obj in inspect.getmembers(module):
             result = _process_class(obj, base_class, module_path, logger)
@@ -89,7 +94,6 @@ def import_classes_from_directory(
     for file_path in directory.glob("**/*.py"):
         if include_name and file_path.name not in include_name:
             continue
-        file_path = file_path.relative_to(directory)
 
         result = _import_module(file_path, base_class, logger)
         if result.is_err():
