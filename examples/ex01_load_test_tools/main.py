@@ -6,10 +6,10 @@
     1. `Agent` をimportする
     2. `Agent` のインスタンスを作成し、引数としてconfigsやlogsを置いてもよいディレクトリを指定する
     3. `Agent` のrunメソッドを、asyncio.run()内で実行すると、BOTが起動して常駐する
-    4. ツールを読み込ませるには、コマンドを実行する際に、ツールが置いてあるディレクトリを指定する
+    4. ツールを読み込ませるには、ツールが置いてあるディレクトリを指定して実行する (サブディレクトリも指定可能)
         ```bash
         examples/ex01_load_test_tools$ python main.py --bot-name testbot \
-            --tool-directory-paths applications
+            --tool-directory-paths examples/ex01_load_test_tools/applications
         ```
 """
 
