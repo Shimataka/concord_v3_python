@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest import mock
 
+from pyresults import Ok
+
 # import pytest
 # from src.concord.src.core.exceptions.import_module import ImportModuleError
 from concord.infrastructure.discord.dynamic_import import (
@@ -236,8 +238,6 @@ class TestImportClassesFromDirectory:
         mock_path.return_value = mock_directory
 
         # Mock successful imports
-        from pyresults import Ok
-
         mock_import_module.side_effect = [
             Ok([("test1", MockChildClass)]),
             Ok([("test2", MockChildClass)]),
@@ -278,8 +278,6 @@ class TestImportClassesFromDirectory:
         mock_directory.glob.return_value = [mock_file1, mock_file2]
 
         mock_path.return_value = mock_directory
-
-        from pyresults import Ok
 
         mock_import_module.return_value = Ok([("included", MockChildClass)])
 
@@ -355,9 +353,6 @@ class TestImportClassesFromDirectory:
         mock_directory.glob.return_value = [mock_file]
 
         mock_path.return_value = mock_directory
-
-        from pyresults import Ok
-
         mock_import_module.return_value = Ok(
             [
                 ("test", MockChildClass),
