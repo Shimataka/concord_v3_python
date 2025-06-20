@@ -141,6 +141,9 @@ lint.ignore = [
     "PLW2901", # for loop variable overwritten by assignment target
     # ruff ignore
     "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    # pyupgrade
+    "UP046",  # use special type parameter syntax
+    "UP047",  # use special type parameter syntax
 ]
 lint.fixable = [
     "ALL"
