@@ -1,4 +1,5 @@
 import logging
+import re
 from pathlib import Path
 from typing import Literal
 
@@ -139,8 +140,6 @@ class ConfigBOT(BaseConfigArgs):
             Returns:
                 list[str]: 変換されたlist[str]
             """
-            import re
-
             parsed_arg: list[str] = [s for s in re.split(r"\W", arg.strip("[").strip("]").strip()) if len(s) != 0]
             return parsed_arg
 
