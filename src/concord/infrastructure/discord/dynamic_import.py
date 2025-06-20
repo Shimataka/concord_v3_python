@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 import inspect
 from logging import Logger
 from pathlib import Path
@@ -15,21 +16,21 @@ TypeOfAny = TypeVar("TypeOfAny", bound=type)
 def _process_class(
     obj: object,
     base_class: TypeOfAny | None,
-    module_path: str,
+    module_path: Path,
     logger: Logger | None,
 ) -> tuple[str, TypeOfAny] | None:
     if not inspect.isclass(obj):
         return None
-    if base_class is None or (issubclass(obj, base_class) and obj != base_class):
+    if base_class is None or (issubclass(obj, base_class) and obj is not base_class):
         if logger is not None:
-            msg = f"Loaded {obj.__name__} from {module_path}"
+            msg = f"Loaded {obj.__name__} from {module_path!s}"
             logger.info(msg)
         return (obj.__module__, cast("TypeOfAny", obj))
     return None
 
 
 def _import_module(
-    module_path: str,
+    module_path: Path,
     base_class: TypeOfAny | None = None,
     logger: Logger | None = None,
 ) -> Result[list[tuple[str, TypeOfAny]], str]:
@@ -37,7 +38,14 @@ def _import_module(
         msg = f"Import: {module_path}"
         logger.info(msg)
     try:
-        module = importlib.import_module(module_path)
+        module_name = f"_dyn_mod_{module_path.name}_{module_path.stat().st_ino}"
+        spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+        if spec is None or spec.loader is None:
+            msg = f"Failed to import {module_path}"
+            return Err(msg)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
         classes: list[tuple[str, TypeOfAny]] = []
         for _, obj in inspect.getmembers(module):
             result = _process_class(obj, base_class, module_path, logger)
@@ -74,15 +82,18 @@ def import_classes_from_directory(
     """
     classes: list[LoadedClass[TypeOfAny]] = []
     directory = Path(directory_path)
+    if not directory.is_dir() or not directory.exists():
+        msg = f"Directory {directory_path} does not exist"
+        if logger is not None:
+            logger.exception(msg)
+        raise FileNotFoundError(msg)
+    directory = directory.resolve()
 
-    for file_path in directory.glob("*.py"):
+    for file_path in directory.glob("**/*.py"):
         if include_name and file_path.name not in include_name:
             continue
 
-        module_name = file_path.stem
-        module_path = f"{directory.name}.{module_name}"
-
-        result = _import_module(module_path, base_class, logger)
+        result = _import_module(file_path, base_class, logger)
         if result.is_err():
             raise ImportModuleError(result.unwrap_err())
 

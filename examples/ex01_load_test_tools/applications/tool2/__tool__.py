@@ -5,8 +5,8 @@ from discord.message import Message
 from concord import Agent
 
 
-class TestTool(Cog):
-    """TestTool
+class TestTool2(Cog):
+    """TestTool2
 
     Args:
         agent (Agent): BOTのコア部分となるAgentクラス。
@@ -14,22 +14,22 @@ class TestTool(Cog):
 
     def __init__(self, agent: Agent) -> None:
         self.agent = agent
-        self.template_tool_task1.start()
+        self.template_tool_task2.start()
 
     @loop(seconds=10, count=5)
-    async def template_tool_task1(self) -> None:
-        """template_tool_task1
+    async def template_tool_task2(self) -> None:
+        """template_tool_task2
 
         テンプレートツール (コピー用)
 
         """
         await self.agent.cached_channels.dev_channel.send(
-            content=f"Task! {self.template_tool_task1.current_loop}",
+            content=f"Task! {self.template_tool_task2.current_loop}",
         )
 
-    @template_tool_task1.error
-    async def template_tool_task1_error(self, error: BaseException) -> None:
-        """template_tool_task1_error
+    @template_tool_task2.error
+    async def template_tool_task2_error(self, error: BaseException) -> None:
+        """template_tool_task2_error
 
         Run on any error is raised
 
@@ -41,9 +41,9 @@ class TestTool(Cog):
         """
         raise error
 
-    @template_tool_task1.after_loop
-    async def template_tool_task1_afterloop(self) -> None:
-        """template_tool_task1_afterloop
+    @template_tool_task2.after_loop
+    async def template_tool_task2_afterloop(self) -> None:
+        """template_tool_task2_afterloop
 
         Run on all loops are finished.
 
@@ -54,15 +54,15 @@ class TestTool(Cog):
 
     @hybrid_command()  # type: ignore[arg-type]
     @has_permissions(administrator=True)
-    async def template_tool_command1(
+    async def template_tool_command2(
         self,
         context: Context,  # type: ignore[type-arg, reportUnknownReturnType]
     ) -> None:
         """テンプレート1コマンドの説明"""
         await context.send("Accept")
 
-    @template_tool_command1.error  # type: ignore[reportUnknownReturnType]
-    async def template1_error(
+    @template_tool_command2.error  # type: ignore[reportUnknownReturnType]
+    async def template2_error(
         self,
         context: Context,  # type: ignore[type-arg, reportUnknownReturnType]  # noqa: ARG002
         error: CommandError,  # type: ignore[type-arg, reportUnknownReturnType]

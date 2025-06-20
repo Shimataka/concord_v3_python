@@ -82,6 +82,9 @@ BOTに[スラッシュコマンド](https://discordpy.readthedocs.io/ja/latest/e
 
 ### 1. 任意のディレクトリ `{path1}` や `{path2}` などに `__tool__.py` を配置し、以下のように実行します
 
+なお、サブディレクトリまで探索することができます。
+たとえば `parent/path1` と `parent/path2` に `__tool__.py` を配置した場合でも、 `{parent}` を指定することでどちらの `__tool__.py` も読み込みます。
+
 ```bash
 > python3 concord/main.py --bot-name {bot_name} --tool-directory-paths {path1} {path2} ...
 ```
