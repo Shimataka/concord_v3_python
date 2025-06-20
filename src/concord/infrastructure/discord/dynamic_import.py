@@ -1,7 +1,6 @@
 import importlib
 import importlib.util
 import inspect
-import sys
 from logging import Logger
 from pathlib import Path
 from typing import TypeVar, cast
@@ -45,7 +44,6 @@ def _import_module(
             msg = f"Failed to import {module_path}"
             return Err(msg)
         module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
         spec.loader.exec_module(module)
 
         classes: list[tuple[str, TypeOfAny]] = []
