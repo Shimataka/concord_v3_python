@@ -59,7 +59,11 @@ class BaseConfigArgs:
             raise ValueError(msg)
 
     def _read(self) -> None:
-        self.config.read(
+        if self._config is None:
+            msg = "Error: config is not initialized"
+            self._logger.exception(msg)
+            raise ValueError(msg)
+        self._config.read(
             filenames=self.filepath.as_posix(),
             encoding="utf-8",
         )
