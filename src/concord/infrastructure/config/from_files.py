@@ -57,7 +57,7 @@ class ConfigBOT(BaseConfigArgs):
     ) -> None:
         if filepath is None:
             filepath = DEFAULT_CONFIG_DIR / f"{bot_name}.ini"
-        super().__init__(filepath=filepath, logger=logger)
+        super().__init__(filepath=filepath, logger=logger, is_required=True)
         self._channel_list_section_name = DEFAULT_CHANNEL_LIST_SECTION_NAME
 
     @property
@@ -101,7 +101,7 @@ class ConfigBOT(BaseConfigArgs):
 
     @channel_list_section_name.setter
     def channel_list_section_name(self, value: str) -> None:
-        if self._config.has_section(value):
+        if self.config.has_section(value):
             self._channel_list_section_name = value
         else:
             msg = f"Section {value} was not found in {self.filepath.absolute().as_posix()}"
@@ -192,10 +192,10 @@ class ConfigBOT(BaseConfigArgs):
             section = self.channel_list_section_name
         value = None
         _mapping: dict[str, int] = {}
-        if self._config.has_section(section):
-            for option in self._config.options(section):
+        if self.config.has_section(section):
+            for option in self.config.options(section):
                 try:
-                    value = self._config[section][option]
+                    value = self.config[section][option]
                     _mapping[option] = int(value)
                 except ValueError:
                     msg = f"Invalid values to convert option {option} to int: {value}"
@@ -222,10 +222,10 @@ class ConfigBOT(BaseConfigArgs):
             section = self.channel_list_section_name
         value = None
         _mapping: dict[int, str] = {}
-        if self._config.has_section(section):
-            for option in self._config.options(section):
+        if self.config.has_section(section):
+            for option in self.config.options(section):
                 try:
-                    value = self._config[section][option]
+                    value = self.config[section][option]
                     _mapping[int(value)] = option
                 except ValueError:
                     msg = f"Invalid values to convert option {option} to int: {value}"
