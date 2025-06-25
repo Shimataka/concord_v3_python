@@ -42,7 +42,7 @@ class TestBaseConfigArgs:
             config = BaseConfigArgs(mock_path, mock_logger)
 
             assert config.filepath == mock_path
-            assert config._config == mock_parser  # noqa: SLF001 # type: ignore[reportPrivateUsage]
+            assert config.config == mock_parser  # type: ignore[reportPrivateUsage]
             assert config._logger == mock_logger  # noqa: SLF001 # type: ignore[reportPrivateUsage]
             mock_parser.read.assert_called_once()
 
@@ -59,7 +59,7 @@ class TestBaseConfigArgs:
         mock_logger = mock.Mock()
 
         with pytest.raises(FileNotFoundError):
-            BaseConfigArgs(mock_path, mock_logger)
+            BaseConfigArgs(mock_path, mock_logger, is_required=True)
 
         mock_logger.error.assert_called_once()
 
@@ -77,7 +77,7 @@ class TestBaseConfigArgs:
         mock_logger = mock.Mock()
 
         with pytest.raises(FileNotFoundError):
-            BaseConfigArgs(mock_path, mock_logger)
+            BaseConfigArgs(mock_path, mock_logger, is_required=True)
 
         mock_logger.error.assert_called_once()
 
@@ -96,7 +96,7 @@ class TestBaseConfigArgs:
         mock_logger = mock.Mock()
 
         with pytest.raises(ValueError, match="Error: Not ini file: /test/config.txt"):
-            BaseConfigArgs(mock_path, mock_logger)
+            BaseConfigArgs(mock_path, mock_logger, is_required=True)
 
         mock_logger.error.assert_called_once()
 
@@ -271,7 +271,11 @@ class TestConfigBOT:
         config = ConfigBOT(bot_name="testbot", logger=mock_logger)
 
         expected_path = DEFAULT_CONFIG_DIR / "testbot.ini"
-        mock_super_init.assert_called_once_with(filepath=expected_path, logger=mock_logger)
+        mock_super_init.assert_called_once_with(
+            filepath=expected_path,
+            logger=mock_logger,
+            is_required=True,
+        )
         assert config._channel_list_section_name == DEFAULT_CHANNEL_LIST_SECTION_NAME  # noqa: SLF001 # type: ignore[reportPrivateUsage]
 
     def test_name_property(self) -> None:

@@ -15,11 +15,35 @@ class BaseConfigArgs:
         config (ConfigParser): 設定ファイルのパーサー (設定値を保持する)
     """
 
-    def __init__(self, filepath: Path, logger: logging.Logger) -> None:
-        self.filepath = filepath.resolve()
-        self._config = ConfigParser()
+    def __init__(
+        self,
+        filepath: Path | None,
+        logger: logging.Logger,
+        *,
+        is_required: bool = False,
+    ) -> None:
+        self._filepath = filepath
+        self._config: ConfigParser | None = None
         self._logger = logger
+        if is_required:
+            self._check_existence()
 
+    @property
+    def filepath(self) -> Path:
+        if self._filepath is None:
+            msg = "Error: filepath is not set"
+            self._logger.error(msg)
+            raise ValueError(msg)
+        return self._filepath.resolve()
+
+    @property
+    def config(self) -> ConfigParser:
+        if self._config is None:
+            self._config = ConfigParser()
+            self._read()
+        return self._config
+
+    def _check_existence(self) -> None:
         # Check existence
         if not self.filepath.exists():
             msg = f"Error: Not found: {self.filepath.absolute().as_posix()}"
@@ -34,7 +58,11 @@ class BaseConfigArgs:
             self._logger.error(msg)
             raise ValueError(msg)
 
-        # Parser
+    def _read(self) -> None:
+        if self._config is None:
+            msg = "Error: config is not initialized"
+            self._logger.exception(msg)
+            raise ValueError(msg)
         self._config.read(
             filenames=self.filepath.as_posix(),
             encoding="utf-8",
@@ -50,13 +78,13 @@ class BaseConfigArgs:
         Returns:
             str: 値
         """
-        if self._config.has_section(
+        if self.config.has_section(
             section=section,
-        ) and self._config.has_option(
+        ) and self.config.has_option(
             section=section,
             option=option,
         ):
-            return self._config[section][option]
+            return self.config[section][option]
         msg = f"Not found: {self.filepath.absolute().as_posix()}"
         msg += f"section={section}, option={option}"
         self._logger.error(msg)
@@ -77,8 +105,8 @@ class BaseConfigArgs:
             >>> config = BaseConfigArgs(filepath=Path("test.ini"), logger=logging.getLogger())
             >>> config.set_value(section="test", option="test", value="test")
         """
-        if self._config.has_section(section):
-            self._config[section][option] = value
+        if self.config.has_section(section):
+            self.config[section][option] = value
         else:
             msg = f"Section {section} was not found in {self.filepath.absolute().as_posix()}"
             self._logger.error(msg)
@@ -103,4 +131,4 @@ class BaseConfigArgs:
             modeが"a"の場合は、ファイルに追記する
         """
         with self.filepath.open(mode, encoding="utf-8") as fp:
-            self._config.write(fp)
+            self.config.write(fp)
