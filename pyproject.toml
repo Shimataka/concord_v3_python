@@ -159,7 +159,7 @@ format.quote-style = "double"
 "tests/**/*.py" = ["S101"]
 
 [tool.pytest.ini_options]
-addopts = "-vv --tb=short -s --cov=./tests --cov-report html"
+addopts = "-vv --tb=short -s --cov=src/concord --cov-report html"
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
