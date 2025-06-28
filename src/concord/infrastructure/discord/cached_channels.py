@@ -123,7 +123,10 @@ class CachedChannels:
         """keyからサーバー内のGuildChannelを取得する
 
         Args:
-            key (str): ChannelName or ChannelId
+            key (str): 設定ファイルで定義されたチャンネルのキー
+
+        Returns:
+            GuildChannel: Channel
         """
         if key in self._channel_name2id:
             _id = self._channel_name2id[key]
