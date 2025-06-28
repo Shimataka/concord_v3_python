@@ -180,7 +180,7 @@ class TestCachedChannels:
         mock_channel = mock.Mock(spec=GuildChannel)
         mock_bot.get_channel.return_value = mock_channel
 
-        result = cached_channels.get_channel_from_key(_id=123)
+        result = cached_channels.get_channel_from_id_or_name(_id=123)
 
         assert result == mock_channel
         mock_bot.get_channel.assert_called_once_with(123)
@@ -192,7 +192,7 @@ class TestCachedChannels:
         mock_bot.get_channel.return_value = None
 
         with pytest.raises(KeyError):
-            cached_channels.get_channel_from_key(_id=999)
+            cached_channels.get_channel_from_id_or_name(_id=999)
 
         mock_logger.error.assert_called_once()
 
@@ -204,7 +204,7 @@ class TestCachedChannels:
         mock_bot.get_channel.return_value = mock_channel
 
         with pytest.raises(KeyError):
-            cached_channels.get_channel_from_key(_id=123)
+            cached_channels.get_channel_from_id_or_name(_id=123)
 
         mock_logger.error.assert_called()
 
@@ -216,7 +216,7 @@ class TestCachedChannels:
         mock_channel.name = "test_channel"
         mock_bot.get_all_channels.return_value = [mock_channel]
 
-        result = cached_channels.get_channel_from_key(channel_name="test_channel")
+        result = cached_channels.get_channel_from_id_or_name(channel_name="test_channel")
 
         assert result == mock_channel
 
@@ -231,7 +231,7 @@ class TestCachedChannels:
         mock_bot.get_all_channels.return_value = [mock_channel1, mock_channel2]
 
         with pytest.raises(ValueError, match="Too many match: 2 channels has the name."):
-            cached_channels.get_channel_from_key(channel_name="duplicate")
+            cached_channels.get_channel_from_id_or_name(channel_name="duplicate")
 
         mock_logger.error.assert_called()
 
@@ -244,7 +244,7 @@ class TestCachedChannels:
         mock_bot.get_all_channels.return_value = [mock_channel]
 
         with pytest.raises(ValueError, match="No match: nonexistent."):
-            cached_channels.get_channel_from_key(channel_name="nonexistent")
+            cached_channels.get_channel_from_id_or_name(channel_name="nonexistent")
 
         mock_logger.error.assert_called()
 
@@ -253,7 +253,7 @@ class TestCachedChannels:
         cached_channels, _, mock_logger = self.create_cached_channels()
 
         with pytest.raises(ValueError, match="Invalid arguments: Both of 'id' and 'channel_name' are None"):
-            cached_channels.get_channel_from_key()
+            cached_channels.get_channel_from_id_or_name()
 
         mock_logger.error.assert_called_once()
 
@@ -264,7 +264,7 @@ class TestCachedChannels:
         mock_channel = mock.Mock(spec=GuildChannel)
         mock_bot.get_channel.return_value = mock_channel
 
-        result = cached_channels.get_channel_from_key(_id=123, channel_name="test_channel")
+        result = cached_channels.get_channel_from_id_or_name(_id=123, channel_name="test_channel")
 
         assert result == mock_channel
         mock_bot.get_channel.assert_called_once_with(123)
