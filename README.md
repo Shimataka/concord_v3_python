@@ -4,92 +4,161 @@ ConcordはDiscord用のBOTアプリケーションです。AIによる会話機�
 
 Concord is a BOT application for Discord. It includes conversation features with AI and sound features using Discord's voice chat, and the code is constructed to make it easy to implement highly extensible features.
 
-## How to install
+## インストール
 
-- 以下のコマンドを実行して、Concordをインストールします。
+```bash
+pip install -e git+https://github.com/Shimataka/concord_v3_python.git
+```
 
-    ```bash
-    > pip install -e git+https://github.com/Shimataka/concord_v3_python.git
-    ```
+## 🚀 クイックスタート（とにかく動かしたい人向け）
 
-## How to use the BOT
+### 1. Discord BOTの設定
 
-### 1. `main.py` で以下のようにBOTのインスタンスを作成します
+1. [Discord Developer Portal](https://discord.com/developers/applications)でアプリケーションを作成
+2. BOTトークンを取得
+3. サーバーに招待（`applications.commands`権限が必要）
+4. 管理者用チャンネルIDを取得
+
+### 2. 必要なファイルを作成
+
+ここでは `mybot` というBOTを作成します。
+他の名前にする場合は、以下の記述の `mybot` を変更してください。
+
+**`main.py`** を作成：
 
 ```python
 import asyncio
-from concord import Agent  # DiscordBOTのクラス
+from pathlib import Path
+from concord import Agent
 
 if __name__ == "__main__":
-    config_and_log_dirpath = Path(__file__).parent
-    agent = Agent(utils_dirpath=config_and_log_dirpath)  # インスタンスを作成
+    config_and_log_dirpath = Path(__file__).parent  # configとlogを保存するディレクトリ
+    agent = Agent(utils_dirpath=config_and_log_dirpath)
     asyncio.run(agent.run())
 ```
 
-### 2. `main.py` と同じ階層に `configs/{bot_name}.ini` を配置して、次のように記述してください
+**`configs/mybot.ini`** を作成：
 
 ```ini
-# configs/{bot_name}.ini
-# ファイル名にある `{bot_name}` は自由に決めることができますが、あとで使用するので覚えておいてください。
+[Discord.Bot]
+name = mybot
+description = This is a bot for the my server.
+
 [Discord.API]
-token = {Discord token}
+token = YOUR_DISCORD_BOT_TOKEN
 
 [Discord.DefaultChannel]
-dev_channel = {ID of a text channel}
-log_channel = {ID of another (same will be OK) text channel}
-
-[Discord.Tool]
-exclusions = [{ExcludedTools1}, {ExcludedTools2}, ...]
-
-[Discord.Channel]
-{channel name1} = {channel id1}
-{channel name2} = {channel id2}
-...
+dev_channel = YOUR_DEV_CHANNEL_ID
+log_channel = YOUR_LOG_CHANNEL_ID
 ```
 
 > [!WARNING]
-> DiscordからBOTに対して配布されたtokenと、管理者チャンネルのIDが2つ必要です。管理者用チャンネルは `dev_channel` と `log_channel` の2つです。`dev_channel` は、BOTとメッセージを送受信するチャンネルで、管理者権限でのコマンドの送信も行います。したがって、`dev_channel` は、管理者権限を持つユーザーがメッセージを送信できるチャンネルである必要があります。`log_channel` は、BOTが起動している間のログを見るためのチャンネルです。こちらはメッセージの送信は行いません。
+> **重要な設定**
+>
+> - `dev_channel`: BOTとメッセージを送受信する管理者用チャンネル
+> - `log_channel`: BOTのログを表示するチャンネル
+> - 両方とも管理者権限を持つユーザーがアクセスできるチャンネルである必要があります
 
-`exclusions`オプションはBOTの登録をスキップするクラス名を記述するものです。ここに記述された文字列と同名のクラスは、BOTへの登録がされません。
+### 3. 実行
 
-さらに `configs/API.ini` を配置することで、 `tools` などで使用するAPI tokenをBOT経由でアクセスできます。
+```bash
+python3 main.py --bot-name mybot
+```
+
+これで基本的なBOTが動作します！
+
+dev_channelにIDを指定したチャンネルにメッセージが送信されます
+
+```markdown
+Good morning, Master.
+Good work today.
+No commands available  # ツールがない場合のメッセージ
+```
+
+---
+
+## 🔧 詳細設定（凝った設定がしたい人向け）
+
+### 高度な設定ファイル
+
+**`configs/mybot.ini`** の完全版：
 
 ```ini
-# configs/API.ini
-[section_name1]  # lower case
-option1 = {API token}
-option2 = {API token}
+[Discord.Bot]
+name = mybot
+description = This is a bot for the my server.
 
-[section_name2]  # lower case
-option3 = {API token}
-option4 = {API token}
+[Discord.API]
+token = YOUR_DISCORD_BOT_TOKEN
+
+[Discord.DefaultChannel]
+dev_channel = YOUR_DEV_CHANNEL_ID
+log_channel = YOUR_LOG_CHANNEL_ID
+
+[Discord.Tool]
+exclusions = [ToolName1, ToolName2]  # 除外するツール(詳細は以下)
+
+[Discord.Channel]
+general = CHANNEL_ID_1
+# Agent.cached_channels.get_channel_from_key(key="general")で取得できる
+announcements = CHANNEL_ID_2
+# Agent.cached_channels.get_channel_from_key(key="announcements")で取得できる
 ```
 
-### 3. コマンドを実行します
+**`configs/API.ini`** （外部API使用時）：
+
+```ini
+[dev1]
+api1 = YOUR_API_KEY_1
+# Agent.config.api.get_api_token(developer="dev1", key="api1")で取得できる
+[dev2]
+api2 = YOUR_API_KEY_2
+# Agent.config.api.get_api_token(developer="dev2", key="api2")で取得できる
+```
+
+### カスタムツールの追加
+
+1. **ツールディレクトリを作成**：
+
+    ```bash
+    mkdir my_tools
+    ```
+
+2. **`my_tools/__tool__.py`** を作成：
+
+    ```python
+    import discord
+    from discord.ext import commands
+
+    class MyCustomTool(commands.Cog):
+        def __init__(self, bot):
+            self.bot = bot
+
+        @commands.slash_command(name="hello")
+        async def hello(self, ctx):
+            await ctx.respond("Hello, World!")
+    ```
+
+3. **ツール付きで実行**：
+
+    ```bash
+    python3 main.py --bot-name mybot --tool-directory-paths my_tools
+    ```
+
+### デバッグモード
 
 ```bash
-> python3 main.py --bot-name {bot_name}  # Normal mode
-> python3 main.py --bot-name {bot_name} --is-debug  # Debug mode
+python3 main.py --bot-name mybot --is-debug
 ```
 
-実行時のログは、`logs/{bot_name}.log` に出力されます。通常モードとデバッグモードで、logファイル中の[記述量が変わります](https://discordpy.readthedocs.io/ja/latest/api.html#discord.utils.setup_logging)。
+ログは `logs/mybot.log` に出力されます。
 
-## How to register tools
+---
 
-BOTに[スラッシュコマンド](https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html)を実装します。
+## 📚 参考情報
 
-[examples/ex01_load_test_tools](examples/ex01_load_test_tools) に、ツールを読み込ませるサンプルがあります。
-
-### 1. 任意のディレクトリ `{path1}` や `{path2}` などに `__tool__.py` を配置し、以下のように実行します
-
-なお、サブディレクトリまで探索することができます。
-たとえば `parent/path1` と `parent/path2` に `__tool__.py` を配置した場合でも、 `{parent}` を指定することでどちらの `__tool__.py` も読み込みます。
-
-```bash
-> python3 concord/main.py --bot-name {bot_name} --tool-directory-paths {path1} {path2} ...
-```
-
-### 2. `__tool__.py` に書かれたクラスのうち `discord.ext.commands.Cog` を継承したクラスは、BOTの起動時に自動で読み込みます
-
-> [!NOTE]
-> スラッシュコマンド以外にも、メッセージのポストなどの[イベント](https://discordpy.readthedocs.io/ja/latest/api.html#event-reference)に反応して実行する処理や、スケジューリングされた処理を行うことが可能です。定期実行したい場合は、[discord.pyのtaskヘルパー例](https://discordpy.readthedocs.io/ja/latest/ext/tasks/index.html)を参考にしてください。
+- [examples/ex00_basic_usage](examples/ex00_basic_usage/main.py) - 基本的なBOTのサンプル
+- [examples/ex01_load_test_tools](examples/ex01_load_test_tools/main.py) - ツールのサンプル
+- [Discord.py ドキュメント](https://discordpy.readthedocs.io/ja/latest/)
+- [スラッシュコマンド](https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html)
+- [イベントリファレンス](https://discordpy.readthedocs.io/ja/latest/api.html#event-reference)
