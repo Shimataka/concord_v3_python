@@ -168,4 +168,5 @@ src/configs/*.ini
 src/logs/*.log
 examples/**/configs/*.ini
 examples/**/logs/*.log
+examples/**/logs/*.log.*
 typings/*

@@ -118,6 +118,26 @@ class CachedChannels:
     def get_channel_from_key(
         self,
         *,
+        key: str,
+    ) -> GuildChannel:
+        """keyからサーバー内のGuildChannelを取得する
+
+        Args:
+            key (str): 設定ファイルで定義されたチャンネルのキー
+
+        Returns:
+            GuildChannel: Channel
+        """
+        if key in self._channel_name2id:
+            _id = self._channel_name2id[key]
+            return self.get_channel_from_id_or_name(_id=_id)
+        msg = f"No match: {key}"
+        self._logger.error(msg)
+        raise KeyError(msg)
+
+    def get_channel_from_id_or_name(
+        self,
+        *,
         _id: int | None = None,
         channel_name: str | None = None,
     ) -> GuildChannel:
