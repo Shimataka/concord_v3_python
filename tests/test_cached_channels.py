@@ -173,7 +173,7 @@ class TestCachedChannels:
 
         mock_logger.error.assert_called()
 
-    def test_get_channel_from_key_by_id_success(self) -> None:
+    def test_get_channel_from_id_or_name_by_id_success(self) -> None:
         """Test get_channel_from_key with valid channel ID."""
         cached_channels, mock_bot, _ = self.create_cached_channels()
 
@@ -185,7 +185,7 @@ class TestCachedChannels:
         assert result == mock_channel
         mock_bot.get_channel.assert_called_once_with(123)
 
-    def test_get_channel_from_key_by_id_not_found(self) -> None:
+    def test_get_channel_from_id_or_name_by_id_not_found(self) -> None:
         """Test get_channel_from_key with non-existent channel ID."""
         cached_channels, mock_bot, mock_logger = self.create_cached_channels()
 
@@ -196,7 +196,7 @@ class TestCachedChannels:
 
         mock_logger.error.assert_called_once()
 
-    def test_get_channel_from_key_by_id_not_guild_channel(self) -> None:
+    def test_get_channel_from_id_or_name_by_id_not_guild_channel(self) -> None:
         """Test get_channel_from_key with non-GuildChannel."""
         cached_channels, mock_bot, mock_logger = self.create_cached_channels()
 
@@ -208,7 +208,7 @@ class TestCachedChannels:
 
         mock_logger.error.assert_called()
 
-    def test_get_channel_from_key_by_name_success(self) -> None:
+    def test_get_channel_from_id_or_name_by_name_success(self) -> None:
         """Test get_channel_from_key with valid channel name."""
         cached_channels, mock_bot, _ = self.create_cached_channels()
 
@@ -220,7 +220,7 @@ class TestCachedChannels:
 
         assert result == mock_channel
 
-    def test_get_channel_from_key_by_name_multiple_matches(self) -> None:
+    def test_get_channel_from_id_or_name_by_name_multiple_matches(self) -> None:
         """Test get_channel_from_key with multiple matching channel names."""
         cached_channels, mock_bot, mock_logger = self.create_cached_channels()
 
@@ -235,7 +235,7 @@ class TestCachedChannels:
 
         mock_logger.error.assert_called()
 
-    def test_get_channel_from_key_by_name_no_matches(self) -> None:
+    def test_get_channel_from_id_or_name_by_name_no_matches(self) -> None:
         """Test get_channel_from_key with no matching channel names."""
         cached_channels, mock_bot, mock_logger = self.create_cached_channels()
 
@@ -248,7 +248,7 @@ class TestCachedChannels:
 
         mock_logger.error.assert_called()
 
-    def test_get_channel_from_key_both_args_none(self) -> None:
+    def test_get_channel_from_id_or_name_both_args_none(self) -> None:
         """Test get_channel_from_key with both arguments None."""
         cached_channels, _, mock_logger = self.create_cached_channels()
 
@@ -257,7 +257,7 @@ class TestCachedChannels:
 
         mock_logger.error.assert_called_once()
 
-    def test_get_channel_from_key_id_takes_priority(self) -> None:
+    def test_get_channel_from_id_or_name_id_takes_priority(self) -> None:
         """Test get_channel_from_key with both arguments provided (ID takes priority)."""
         cached_channels, mock_bot, _ = self.create_cached_channels()
 
@@ -270,3 +270,24 @@ class TestCachedChannels:
         mock_bot.get_channel.assert_called_once_with(123)
         # get_all_channels should not be called since ID takes priority
         mock_bot.get_all_channels.assert_not_called()
+
+    def test_get_channel_from_key_success(self) -> None:
+        """Test get_channel_from_key with valid key."""
+        cached_channels, mock_bot, _ = self.create_cached_channels()
+
+        mock_channel = mock.Mock(spec=GuildChannel)
+        mock_bot.get_channel.return_value = mock_channel
+
+        result = cached_channels.get_channel_from_key(key="dev_channel")
+
+        assert result == mock_channel
+        mock_bot.get_channel.assert_called_once_with(123)
+
+    def test_get_channel_from_key_not_found(self) -> None:
+        """Test get_channel_from_key with non-existent key."""
+        cached_channels, _, mock_logger = self.create_cached_channels()
+
+        with pytest.raises(KeyError, match="No match: nonexistent_key"):
+            cached_channels.get_channel_from_key(key="nonexistent_key")
+
+        mock_logger.error.assert_called_once_with("No match: nonexistent_key")
