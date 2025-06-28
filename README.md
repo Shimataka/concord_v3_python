@@ -131,8 +131,8 @@ api2 = YOUR_API_KEY_2
     from discord.ext import commands
 
     class MyCustomTool(commands.Cog):
-        def __init__(self, bot):
-            self.bot = bot
+        def __init__(self, agent: Agent):
+            self.agent = agent
 
         @commands.slash_command(name="hello")
         async def hello(self, ctx):
