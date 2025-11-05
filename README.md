@@ -95,6 +95,7 @@ python examples/ex01_load_test_tools/main.py --bot-name testbot \
 - `--tool-directory-paths` (optional, str): ツール探索ディレクトリ（スペース区切り複数可）
   - 相対パスはカレントから解決され、絶対パスに正規化
   - ディレクトリ存在/可読性を検証。無い場合はエラー
+  - 指定されたパスに重複がある場合は、一意に解決されます。
 - `--is-debug` (optional, flag): ログレベルを DEBUG にし、詳細ログを出力
 
 Agent 初期化時の挙動（抜粋）:
@@ -220,6 +221,6 @@ python main.py --bot-name mybot \
 
 ## 参考リンク
 
-- Discord.py ドキュメント: `https://discordpy.readthedocs.io/ja/latest/`
-- スラッシュコマンド: `https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html`
-- イベントリファレンス: `https://discordpy.readthedocs.io/ja/latest/api.html#event-reference`
+- Discord.py ドキュメント: [https://discordpy.readthedocs.io/ja/latest/](https://discordpy.readthedocs.io/ja/latest/)
+- スラッシュコマンド: [https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html](https://discordpy.readthedocs.io/ja/latest/ext/commands/commands.html)
+- イベントリファレンス: [https://discordpy.readthedocs.io/ja/latest/api.html#event-reference](https://discordpy.readthedocs.io/ja/latest/api.html#event-reference)
